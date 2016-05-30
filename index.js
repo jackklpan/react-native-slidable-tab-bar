@@ -1,5 +1,5 @@
-var React = require('react-native');
-var {
+import React, { Component } from 'react';
+import {
 	StyleSheet,
 	Text,
 	View,
@@ -7,50 +7,76 @@ var {
 	ScrollView,
 	TouchableHighlight,
 	Animated,
-} = React;
+	Dimensions
+} from 'react-native';
 
-var deviceWidth = require('Dimensions').get('window').width;
 
-var SlidableTabBar = React.createClass({
-	getInitialState: function(){
-		return {
+class SlidableTabBar extends Component {
+	constructor(props) {
+    super(props);
+
+		let deviceWidth = Dimensions.get('window').width;
+    this.state = {
 			selectedTopic: 0,
+			containerWidth: deviceWidth
 		};
-	},
-	selectTopic: function(index){
+		if(props.containerWidth) {
+			this.state.containerWidth = props.containerWidth;
+		}
+  }
+
+	selectTopic (index){
 		this.setState({selectedTopic: index});
-	},
-	renderCenterView: function(thisView, index){
+	}
+	renderCenterView (thisView, index){
 		if(this.state.selectedTopic === index){
 			return (
-				{thisView}
+				<View
+        	key={thisView.props.title + '_' + index}
+        	style={{width: this.state.containerWidth, }}>
+        	{thisView}
+				</View>
 			);
 		}
-	},
-	renderTabBarOption: function(title, color, index){
+	}
+	renderTabBarOption (props, index){
+		let buttonStyle = props.buttonStyle ? props.buttonStyle : styles.buttonStyle;
+		let buttonUnderlayColor = props.buttonUnderlayColor ? props.buttonUnderlayColor : 'white';
+
+		let title = props.title ? props.title : index+1;
+		let textNormalStyle = props.textNormalStyle ? props.textNormalStyle : styles.textNormalStyle;
+		let textHighlightStyle = props.textHighlightStyle ? props.textHighlightStyle : styles.textHighlightStyle;
+
+		let bottomLine = index==this.state.selectedTopic ? <View style={{height:1, width:this.state.containerWidth, backgroundColor: 'blue'}} /> : null;
+
 		return(
 			<TouchableHighlight
+				key={'button_'+index}
+				style={buttonStyle}
 				onPress={() => this.selectTopic(index)}
-				underlayColor='white'>
-				<View style={[styles.tabBarOption, {backgroundColor:(this.state.selectedTopic === index)? '#D3D1D0': '#EEEDE7', borderColor: color}]}>
-					<Text style={{letterSpacing: 3, color: '#5D5035', fontWeight: '300'}}>{title}</Text>
-				</View>
+				underlayColor={buttonUnderlayColor}
+			>
+				<Text
+					style={index==this.state.selectedTopic ? textHighlightStyle : textNormalStyle}
+				>
+					{title}
+				</Text>
 			</TouchableHighlight>
 		);
-	},
-	render: function() {
+	}
+	render () {
 		return(
-			<View style={{flex:1}}>
-				
+			<View style={{flex:1, width:this.state.containerWidth}}>
+
 				{/*Tab Bar*/}
 				<View style={{flexDirection:'row'}}>
 					<ScrollView
 						automaticallyAdjustContentInsets={false}
 						horizontal={true}
 						bounces={false}
-						showsHorizontalScrollIndicator={false} 
-						style={styles.tabBar}>
-						{this.props.children.map((child, i) => this.renderTabBarOption(child.props.title, child.props.color, i))}
+						showsHorizontalScrollIndicator={false}
+					>
+						{this.props.children.map((child, i) => this.renderTabBarOption(child.props, i))}
 					</ScrollView>
 				</View>
 
@@ -61,31 +87,24 @@ var SlidableTabBar = React.createClass({
 
 			</View>
 		);
-	},
-});
+	}
+}
 
 var styles = StyleSheet.create({
-	tabBarOption: {
+	buttonStyle: {
 		justifyContent: 'center',
-		paddingLeft:23,
-		paddingRight:23,
+		width: 100,
 		paddingBottom:14,
 		paddingTop:12,
-		borderBottomWidth:7,
 	},
-	tabBar: {
-		position: 'relative',
+	textNormalStyle: {
+		color: 'black',
+		fontSize: 17
 	},
-	tabBarSwipeIcon: {
-		paddingLeft: 2,
-		paddingRight: 2,
-		position: 'absolute',
-		right: 0,
-		height: 43,
-		width:28,
-		justifyContent: 'center',
-		backgroundColor: '#EEEDE7',
-	},
+	textHighlightStyle: {
+		color: 'blue',
+		fontSize: 17
+	}
 });
 
 module.exports = SlidableTabBar
