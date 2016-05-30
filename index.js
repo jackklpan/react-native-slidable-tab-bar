@@ -18,10 +18,16 @@ class SlidableTabBar extends Component {
 		let deviceWidth = Dimensions.get('window').width;
     this.state = {
 			selectedTopic: 0,
-			containerWidth: deviceWidth
+			containerWidth: deviceWidth,
+			tabBarWidth: deviceWidth / 4
 		};
 		if(props.containerWidth) {
 			this.state.containerWidth = props.containerWidth;
+		}
+		if(this.props.children.length < 4) {
+			this.state.tabBarWidth = this.state.containerWidth / this.props.children.length;
+		} else {
+			this.state.tabBarWidth = this.state.containerWidth / 4;
 		}
   }
 
@@ -52,7 +58,7 @@ class SlidableTabBar extends Component {
 		return(
 			<TouchableHighlight
 				key={'button_'+index}
-				style={buttonStyle}
+				style={[buttonStyle, {width: this.state.tabBarWidth}]}
 				onPress={() => this.selectTopic(index)}
 				underlayColor={buttonUnderlayColor}
 			>
@@ -93,16 +99,17 @@ class SlidableTabBar extends Component {
 var styles = StyleSheet.create({
 	buttonStyle: {
 		justifyContent: 'center',
-		width: 100,
 		paddingBottom:14,
 		paddingTop:12,
 	},
 	textNormalStyle: {
+		textAlign: 'center',
 		color: 'black',
 		fontSize: 17
 	},
 	textHighlightStyle: {
-		color: 'blue',
+		textAlign: 'center',
+		color: '#ef783d',
 		fontSize: 17
 	}
 });
