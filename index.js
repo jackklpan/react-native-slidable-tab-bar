@@ -99,8 +99,7 @@ class SlidableTabBar extends Component {
 var styles = StyleSheet.create({
 	buttonStyle: {
 		justifyContent: 'center',
-		paddingBottom:14,
-		paddingTop:12,
+		height: 50,
 	},
 	textNormalStyle: {
 		textAlign: 'center',
